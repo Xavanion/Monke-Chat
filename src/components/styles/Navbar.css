@@ -1,0 +1,98 @@
+/* Navbar container */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Ensures each child takes full height */
+    background-color: #262A2B;
+    color: #edf0f1;
+    height: 60px; /* Adjust to desired navbar height */
+    padding: 0 20px; /* Add horizontal padding if needed */
+    position: relative;
+}
+
+/* Left segment (logo and name) */
+.navbar-left {
+    display: flex;
+    align-items: center; /* Center items vertically within the segment */
+}
+
+
+.navbar-left .name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #edf0f1;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-left .image {
+    height: 2.3rem; /* Adjust size relative to the navbar height */
+    margin-right: 0.5rem;
+}
+
+/* Center segment (nav links) */
+.navbar-center {
+    position: absolute; /* Take it out of the document flow */
+    left: 50%; /* Move it to the horizontal center of the navbar */
+    transform: translateX(-50%); /* Center-align the content horizontally */
+    display: flex; /* Maintain flex for the nav links */
+    align-items: center; /* Vertically center the links */
+    height: 100%;
+}
+
+
+.navbar-center .nav-links {
+    list-style-type: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.navbar-center .nav-links li {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-right: 1rem;
+}
+
+.navbar-center .nav-links a {
+    color: #edf0f1;
+    text-decoration: none;
+}
+
+/* Right segment (extra links) */
+.navbar-right {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+
+
+.navbar-right .nav-links {
+    list-style-type: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.navbar-right .nav-links li {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-right: 1rem;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.navbar-right .nav-links li:hover {
+    background-color: #2f3131;
+}
+
+.navbar-right .nav-links a {
+    color: #edf0f1;
+    text-decoration: none;
+}
