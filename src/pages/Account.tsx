@@ -9,26 +9,34 @@ function Account(){
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>){
         event.preventDefault();
         
-        const response = await fetch('127.0.0.1', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(loginForm)
-        });
-        const data = await response.json();
-        
-        // Handle Response
-        if (response.ok){
-            console.log('Login successful:', data)
-        } else{
-            console.log('Login Failed:', data)
+        try{
+            const response = await fetch('http://localhost:5000/api/sign-in', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loginForm)
+            });
+            const data = await response.json();
+            
+            // Handle Response
+            if (response.ok){
+                console.log('Login successful:', data)
+            } else{
+                console.log('Login Failed:', data)
+                setLogin((prev) => ({
+                    ...prev,
+                    pass: '', // Reset password field on failure
+                }));
+            }
+            console.log('Server Response:', data);
+        } catch (error){
+            console.error('Error: ', error);
             setLogin((prev) => ({
                 ...prev,
                 pass: '', // Reset password field on failure
             }));
         }
-        console.log('Server Response:', data);
     }
 
 
