@@ -1,10 +1,33 @@
 // server.js (Node.js with Express)
 const express = require('express');
-const cors = require('cors');
+const cors = require('cors'); // cross-origin resource sharing
+const { Pool } = require('pg'); // Postgress connection
 const app = express();
+require('dotenv').config({path: __dirname + '/secrets.env' }); // Include .env file
+
 
 app.use(cors()); // Handle cross site requests
 app.use(express.json()); // Middleware to parse JSON bodies
+
+
+// Create connection pool using enviroment variables
+const pool = new Pool({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+});
+
+
+// Test the connection
+pool.query('SELECT NOW()', (err, res) => {
+  if (err) {
+    console.error('Error connecting to the database:', err);
+  } else {
+    console.log('Database connected successfully:', res.rows[0]);
+  }
+});
 
 
 app.post('/api/sign-in', (req, res) => {
