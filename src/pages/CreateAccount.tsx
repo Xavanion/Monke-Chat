@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './styles/Account.css';
 
 
-function Account(){
-    const [loginForm, setLogin] = useState({user: '', pass: ''})
-    const navigate = useNavigate();
+
+
+function CreateAccount(){
+    const [loginForm, setLogin] = useState({user: '', pass: '', email: ''})
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>){
         event.preventDefault();
         
         try{
-            const response = await fetch('http://localhost:5000/api/sign-in', {
+            const response = await fetch('http://localhost:5000/api/create-account', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -22,9 +22,9 @@ function Account(){
             
             // Handle Response
             if (response.ok){
-                console.log('Login successful:', data)
+                console.log('Account created successful:', data)
             } else{
-                console.log('Login Failed:', data)
+                console.log('Account creation failed:', data)
                 setLogin((prev) => ({
                     ...prev,
                     pass: '', // Reset password field on failure
@@ -50,9 +50,10 @@ function Account(){
     }
 
 
-    return (
+
+    return(
         <div className='login-wrapper'>
-            <h1>Welcome</h1>
+            <h1>Create an Account</h1>
             <form className='login-form' onSubmit={handleSubmit}>
                 <label>
                     <input
@@ -72,9 +73,17 @@ function Account(){
                         onChange={handleChange}
                     />
                 </label>
+                <label>
+                    <input
+                        type="text"
+                        placeholder='Email'
+                        name='email'
+                        value={loginForm.email}
+                        onChange={handleChange}
+                    />
+                </label>
                 <div>
-                    <button type="submit">Submit</button>
-                    <button type="button" onClick={() => navigate('/create-account')}>
+                    <button type="submit">
                         Create Account
                     </button>
                 </div>
@@ -83,4 +92,4 @@ function Account(){
     )
 }
 
-export default Account;
+export default CreateAccount;
