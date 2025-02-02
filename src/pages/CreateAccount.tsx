@@ -10,6 +10,8 @@ function CreateAccount(){
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>){
         event.preventDefault();
         
+
+        // TODO: Change to promise based & add redirection after successful account creation and store JWT token
         try{
             const response = await fetch('http://localhost:5000/api/create-account', {
                 method: 'POST',
