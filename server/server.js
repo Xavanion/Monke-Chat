@@ -30,12 +30,18 @@ pool.query('SELECT NOW()', (err, res) => {
 });
 
 
+
+
+
 app.post('/api/sign-in', (req, res) => {
   const { user, pass } = req.body; // The data sent from your React frontend
   // Process the data and send a response
   console.log('Received login request:');
   console.log('Username:', user);
   console.log('Password:', pass);
+
+  const results = pool.query('SELECT * from users where username=$1', [user]);
+  console.log(results);
 
   res.json({ message: 'Request received!', user, pass });
 });
