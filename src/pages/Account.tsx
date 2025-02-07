@@ -16,20 +16,20 @@ function Account(){
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: "include", // For cookies
                 body: JSON.stringify(loginForm)
             });
             const data = await response.json();
             
             // Handle Response
-            if (response.ok){
-                console.log('Login successful:', data)
-            } else{
+            if (!response.ok){
                 console.log('Login Failed:', data)
                 setLogin((prev) => ({
                     ...prev,
                     pass: '', // Reset password field on failure
                 }));
             }
+            
             console.log('Server Response:', data);
         } catch (error){
             console.error('Error: ', error);
