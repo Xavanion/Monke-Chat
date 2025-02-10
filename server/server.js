@@ -30,13 +30,14 @@ const pool = new Pool({
 
 const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);
 
+
+// Verifies JWT Token
 const authenticateToken = async (req, res, next) => {
   const token = req.cookies['jwt']; // Grab token from cookie
   
   if ( !token ) {
     return res.status(401).json( { message: 'Access Denied' } );
   }
-
 
   try{
     const { payload } = await jwtVerify(token, secretKey); // Verify token
@@ -87,6 +88,7 @@ app.post('/api/sign-in', async (req, res) => {
 
 
     // Store JWT in cookie
+    // TODO: Store cookie in name=data;name=data format to include user as well
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: false,

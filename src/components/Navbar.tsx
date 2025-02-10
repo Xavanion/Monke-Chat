@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import logo from '../assets/orangutan.png';
 import './styles/Navbar.css';
 
 function Navbar(){
+    const isAuthenticated = useAuth();
+
     return(
         <nav className="navbar">
             <div className="navbar-left">
@@ -13,9 +16,11 @@ function Navbar(){
             </div>
             <div className="navbar-center">
                 <ul className="nav-links">
-                <li>
-                    <Link to="/products">Products</Link>
-                </li>
+                {isAuthenticated && (
+                    <li>
+                        <Link to="/products">Products</Link>
+                    </li>
+                )}
                 </ul>
             </div>
             <div className="navbar-right">
