@@ -6,9 +6,21 @@ const { Pool } = require('pg'); // Postgress connection
 const bcrypt = require('bcrypt'); // Encryption + Salting
 const cookieParser = require('cookie-parser'); // Cookies
 const { SignJWT, jwtVerify} = require('jose');
-const io = require("socket.io")(3000);
+const { Server } = require("socket.io");
+const http = require('http');
+const server = http.createServer(app);
 
 require('dotenv').config({path: __dirname + '/secrets.env' }); // Include .env file
+
+
+const io = new Server(server,{
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+    credentials: true,
+
+  }
+});
 
 
 app.use(cors({
@@ -16,14 +28,17 @@ app.use(cors({
     credentials: true,
   })
 ); // Handle cross site requests
+
 app.use(express.json()); // Middleware to parse JSON bodies
 app.use(cookieParser()); // Middleware to parse cookies
 
 
 io.on("connection", socket => {
-  console.log(socket.id)
+  console.log("User connected: ", socket.id);
+  socket.on('disconnect', () => {
+    console.log('User disconnected: ', socket.id);
+  });
 });
-
 
 
 // Create connection pool using enviroment variables
@@ -152,7 +167,6 @@ app.get('/api/verify', authenticateToken, async (req, res) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.status(200).json({ user: req.user });
 });
-
 
 
 app.listen(5000, () => {

@@ -5,6 +5,8 @@ import { useAuth } from '../hooks/useAuth';
 import logo from '../assets/orangutan.png';
 import './styles/Navbar.css';
 
+
+
 function Navbar(){
     const [showDropdown, setDropdown] = useState(false); // Used for dropdown menu on account
     const [username, setUser] = useState('');
