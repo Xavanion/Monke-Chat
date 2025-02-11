@@ -6,6 +6,7 @@ const { Pool } = require('pg'); // Postgress connection
 const bcrypt = require('bcrypt'); // Encryption + Salting
 const cookieParser = require('cookie-parser'); // Cookies
 const { SignJWT, jwtVerify} = require('jose');
+const io = require("socket.io")(3000);
 
 require('dotenv').config({path: __dirname + '/secrets.env' }); // Include .env file
 
@@ -17,6 +18,12 @@ app.use(cors({
 ); // Handle cross site requests
 app.use(express.json()); // Middleware to parse JSON bodies
 app.use(cookieParser()); // Middleware to parse cookies
+
+
+io.on("connection", socket => {
+  console.log(socket.id)
+});
+
 
 
 // Create connection pool using enviroment variables
@@ -34,7 +41,6 @@ const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);
 // Verifies JWT Token
 const authenticateToken = async (req, res, next) => {
   const token = req.cookies['jwt']; // Grab token from cookie
-  
   if ( !token ) {
     return res.status(401).json( { message: 'Access Denied' } );
   }
@@ -88,7 +94,6 @@ app.post('/api/sign-in', async (req, res) => {
 
 
     // Store JWT in cookie
-    // TODO: Store cookie in name=data;name=data format to include user as well
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: false,
@@ -103,6 +108,15 @@ app.post('/api/sign-in', async (req, res) => {
   }
 });
 
+app.post('/api/logout', async (req, res) => {
+  res.clearCookie('jwt', {
+    httpOnly: true,
+    secure: false,  // Change to `true` in production
+    sameSite: 'strict',
+  });
+
+  res.status(200).json({ message: 'Logged out successfully' });
+});
 
 app.post('/api/create-account', async (req, res) => {
   const { user, pass, email } = req.body;
@@ -129,10 +143,14 @@ app.post('/api/create-account', async (req, res) => {
   }
 });
 
+app.get('/api/username', authenticateToken, async (req, res) => {
+  res.status(200).json({user: req.user.username})
+});
 
-app.get('/api/protected', authenticateToken, (req, res) => {
+app.get('/api/verify', authenticateToken, async (req, res) => {
   // This route is protected and can only be accessed with a valid JWT
-  res.json({ message: 'This is a protected route', user: req.user });
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.status(200).json({ user: req.user });
 });
 
 

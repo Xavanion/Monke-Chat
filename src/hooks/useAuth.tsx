@@ -7,10 +7,25 @@ export const useAuth = () => {
 
     useEffect(() => {
         const checkAuth = async () => {
-            const token = document.cookie.split('; ').find(row => row.startsWith('jwt='));
-            if (token) {
-                setAuthentication(true);
-            } else {
+            try{
+                const response = await fetch('http://localhost:5000/api/verify',{
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                });
+                if (response.status === 200) {
+                    console.log('Authorized')
+                    setAuthentication(true);
+                } else {
+                    console.log('Not Authorized')
+                    setAuthentication(false);
+                    navigate('/account');
+                }
+            } catch ( error ) {
+                console.error('Auth Failed', error);
                 setAuthentication(false);
                 navigate('/account');
             }
