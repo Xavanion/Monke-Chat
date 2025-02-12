@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import logo from '../assets/orangutan.png';
 import './styles/Navbar.css';
+
 
 
 
@@ -13,6 +16,7 @@ function Navbar(){
     const isAuthenticated = useAuth();
     const navigate = useNavigate();
 
+    // Fetch Username
     useEffect(()=> {
         const fetchUser = async () => {
             if (isAuthenticated) {
@@ -23,7 +27,8 @@ function Navbar(){
                     });
                     if (response.ok){
                         const data = await response.json();
-                        setUser(data.user);
+                        const formattedUser = data.user.charAt(0).toUpperCase() + data.user.slice(1);
+                        setUser(formattedUser);
                         setDropdown(true);
                     }
                 } catch ( error ){
@@ -45,7 +50,7 @@ function Navbar(){
                 console.log('Logged out');
                 setUser('');
                 setDropdown(false);
-                navigate('/login');
+                navigate('/');
             } else {
                 console.error('Logout Failed');
             }
@@ -55,6 +60,16 @@ function Navbar(){
     }
 
     const toggleDropdown = () => setDropdown(prev => !prev);
+
+    // Open Dropdown
+    useEffect(() => {
+        try{
+
+        } catch (error){
+            console.error('Error occorued opening dropdown', error);
+            navigate('/');
+        }
+    },[showDropdown])
 
     return(
         <nav className="navbar">
@@ -68,7 +83,7 @@ function Navbar(){
                 <ul className="nav-links">
                 {isAuthenticated && (
                     <li>
-                        <Link to="/products">Products</Link>
+                        <Link to="/chat">Chat</Link>
                     </li>
                 )}
                 </ul>
@@ -89,8 +104,10 @@ function Navbar(){
                             </Link>
                         </li>
                         ) : (
-                            <li>
-                                Logged In
+                            <li >
+                                <Link to="/" onClick={handleLogout}>
+                                {username} <FontAwesomeIcon icon={faCaretDown} />
+                                </Link>
                             </li>
                         )
                     }

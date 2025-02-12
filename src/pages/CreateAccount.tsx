@@ -6,12 +6,19 @@ import './styles/Account.css';
 
 function CreateAccount(){
     const [loginForm, setLogin] = useState({user: '', pass: '', email: ''})
+    const [showPass, setVisibility] = useState(false);
+
+    const isValidUsername = (username: string): boolean => {
+        return /^[a-zA-Z0-9_]+$/.test(username); // Allows letters, numbers, and underscores
+      };
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>){
         event.preventDefault();
-        
+        if (!isValidUsername(loginForm.user)){
+            return;
+        }
 
-        // TODO: Change to promise based & add redirection after successful account creation and store JWT token
+
         try{
             const response = await fetch('http://localhost:5000/api/create-account', {
                 method: 'POST',
@@ -42,7 +49,6 @@ function CreateAccount(){
         }
     }
 
-
     // Changes the username/password to match currently entered ones
     function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
         setLogin((prev) => ({
@@ -52,6 +58,9 @@ function CreateAccount(){
     }
 
 
+    
+
+    const togglePassVisibility = () => {setVisibility(!showPass)};
 
     return(
         <div className='login-wrapper'>
@@ -59,6 +68,7 @@ function CreateAccount(){
             <form className='login-form' onSubmit={handleSubmit}>
                 <label>
                     <input
+                        required
                         type="text"
                         placeholder="Username"
                         name="user"
@@ -68,7 +78,9 @@ function CreateAccount(){
                 </label>
                 <label>
                     <input
-                        type="password"
+                        required
+                        className='pass-field'
+                        type={showPass ? "text" : "password"}
                         placeholder="Password"
                         name="pass"
                         value={loginForm.pass}
@@ -77,6 +89,7 @@ function CreateAccount(){
                 </label>
                 <label>
                     <input
+                        required
                         type="text"
                         placeholder='Email'
                         name='email'
@@ -84,8 +97,11 @@ function CreateAccount(){
                         onChange={handleChange}
                     />
                 </label>
+                <label>
+                    <input type="checkbox" onChange={togglePassVisibility}/> <span>Show Password</span>
+                </label>
                 <div>
-                    <button type="submit">
+                    <button type="submit" id="pass-check">
                         Create Account
                     </button>
                 </div>

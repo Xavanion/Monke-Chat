@@ -135,10 +135,7 @@ app.post('/api/logout', async (req, res) => {
 
 app.post('/api/create-account', async (req, res) => {
   const { user, pass, email } = req.body;
-  console.log('Recieved create request: ');
-  console.log('User:', user);
-  console.log('Pass:', pass);
-  console.log('Email:', email);
+  user = user.toLowerCase();
 
   try {
     // Generate Salt
@@ -164,7 +161,6 @@ app.get('/api/username', authenticateToken, async (req, res) => {
 
 app.get('/api/verify', authenticateToken, async (req, res) => {
   // This route is protected and can only be accessed with a valid JWT
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.status(200).json({ user: req.user });
 });
 

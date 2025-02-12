@@ -1,15 +1,27 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './styles/Account.css';
 
 
 function Account(){
     const [loginForm, setLogin] = useState({user: '', pass: ''})
     const navigate = useNavigate();
+    const [showPass, setVisibility] = useState(false);
+
+
+    const isValidUsername = (username: string): boolean => {
+        return /^[a-zA-Z0-9_]+$/.test(username); // Allows letters, numbers, and underscores
+    };
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>){
         event.preventDefault();
-        
+
+        if (!isValidUsername(loginForm.user)){
+            alert("Invalid Username");
+            return;
+        }
+
         try{
             const response = await fetch('http://localhost:5000/api/sign-in', {
                 method: 'POST',
@@ -20,7 +32,7 @@ function Account(){
                 body: JSON.stringify(loginForm)
             });
             const data = await response.json();
-            
+
             // Handle Response
             if (!response.ok){
                 console.log('Login Failed:', data)
@@ -29,7 +41,8 @@ function Account(){
                     pass: '', // Reset password field on failure
                 }));
             }
-            
+
+            navigate('/');
             console.log('Server Response:', data);
         } catch (error){
             console.error('Error: ', error);
@@ -49,13 +62,15 @@ function Account(){
         }));
     }
 
-
+    const togglePassVisibility = () => {setVisibility(!showPass)};
     return (
+        <>
         <div className='login-wrapper'>
-            <h1>Welcome</h1>
+            <h1>Welcome Back</h1>
             <form className='login-form' onSubmit={handleSubmit}>
                 <label>
                     <input
+                        required
                         type="text"
                         placeholder="Username"
                         name="user"
@@ -65,21 +80,31 @@ function Account(){
                 </label>
                 <label>
                     <input
-                        type="password"
+                        required
+                        className='pass-field'
+                        type={showPass ? "text" : "password"}
                         placeholder="Password"
                         name="pass"
                         value={loginForm.pass}
                         onChange={handleChange}
                     />
                 </label>
+                <label>
+                    <input type="checkbox" onChange={togglePassVisibility}/> <span>Show Password</span>
+                </label>
                 <div>
-                    <button type="submit">Submit</button>
-                    <button type="button" onClick={() => navigate('/create-account')}>
-                        Create Account
-                    </button>
+                    <button type="submit">Submit</button><br/><br/>
+                    <span>Don't Have an account?&nbsp;</span>
+                    <Link to="/create-account">
+                        Sign Up!
+                    </Link>
                 </div>
             </form>
         </div>
+        <div>
+            
+        </div>
+        </>
     )
 }
 

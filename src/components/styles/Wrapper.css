@@ -1,17 +1,7 @@
-.wrapper {
+.content-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background-color: #33373A;
+    background-color: rgb(21,21,21);
     color: white;
 }
-
-.content {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    flex-grow: 0;
-    padding: 20px;
-}
-
-
