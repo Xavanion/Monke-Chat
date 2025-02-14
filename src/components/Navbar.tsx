@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useFetchUser } from '../hooks/useFetchUser';
+import { useLogout } from '../hooks/useLogout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import logo from '../assets/orangutan.png';
@@ -11,54 +12,9 @@ import './styles/Navbar.css';
 
 
 function Navbar(){
-    const [showDropdown, setDropdown] = useState(false); // Used for dropdown menu on account
-    const [username, setUser] = useState('');
-    const isAuthenticated = useAuth();
+    const { username, setUser, showDropdown, setDropdown } = useFetchUser();
     const navigate = useNavigate();
-
-    // Fetch Username
-    useEffect(()=> {
-        const fetchUser = async () => {
-            if (isAuthenticated) {
-                try{
-                    const response = await fetch('http://localhost:5000/api/username', {
-                        method: 'GET',
-                        credentials: 'include',
-                    });
-                    if (response.ok){
-                        const data = await response.json();
-                        const formattedUser = data.user.charAt(0).toUpperCase() + data.user.slice(1);
-                        setUser(formattedUser);
-                        setDropdown(true);
-                    }
-                } catch ( error ){
-                    console.error('User Authentication Failed:', error)
-                }
-            }
-        };
-
-        fetchUser();
-    }, [isAuthenticated]);
-
-    const handleLogout = async () => {
-        try{
-            const response = await fetch('http://localhost:5000/api/logout',{
-                method: 'POST',
-                credentials: 'include',
-            });
-            if (response.ok){
-                console.log('Logged out');
-                setUser('');
-                setDropdown(false);
-                navigate('/');
-            } else {
-                console.error('Logout Failed');
-            }
-        } catch ( error ) {
-            console.error('Logout Error', error)
-        }
-    }
-
+    const handleLogout = useLogout();
     const toggleDropdown = () => setDropdown(prev => !prev);
 
     // Open Dropdown
@@ -81,7 +37,7 @@ function Navbar(){
             </div>
             <div className="navbar-center">
                 <ul className="nav-links">
-                {isAuthenticated && (
+                {username && (
                     <li>
                         <Link to="/chat">Chat</Link>
                     </li>
@@ -97,7 +53,7 @@ function Navbar(){
                         <Link to="/about">About Us</Link>
                     </li>
                     {
-                    !username ? (
+                    !showDropdown ? (
                         <li>
                             <Link to="/account" className="user-icon">
                                 Sign in
