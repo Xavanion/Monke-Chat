@@ -6,9 +6,12 @@ import Contact from './pages/Contact';
 import Chat from './pages/Chat';
 import Navbar from './components/Navbar';
 import CreateAccount from './pages/CreateAccount';
+import { useSocket } from './hooks/useSocket';
 import './components/styles/Wrapper.css';
 
 function App() {
+  const socket = useSocket();
+  
   return(
       <BrowserRouter>
         <div className='app-content'>

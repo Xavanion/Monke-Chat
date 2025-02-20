@@ -9,35 +9,16 @@ const { SignJWT, jwtVerify} = require('jose');
 const { Server } = require("socket.io");
 const http = require('http');
 const server = http.createServer(app);
-
 require('dotenv').config({path: __dirname + '/secrets.env' }); // Include .env file
 
-
-const io = new Server(server,{
-  cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
-    credentials: true,
-  }
-});
-
-
-app.use(cors({
+// Handle cross site requests
+app.use(cors({ 
     origin: "http://localhost:5173",
     credentials: true,
   })
-); // Handle cross site requests
-
+); 
 app.use(express.json()); // Middleware to parse JSON bodies
 app.use(cookieParser()); // Middleware to parse cookies
-
-
-io.on("connection", socket => {
-  console.log("User connected: ", socket.id);
-  socket.on('disconnect', () => {
-    console.log('User disconnected: ', socket.id);
-  });
-});
 
 
 // Create connection pool using enviroment variables
@@ -47,6 +28,33 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
+});
+
+
+// Socket.io Server
+const io = new Server(server,{
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+    credentials: true,
+  }
+});
+
+io.on("connection", socket => {
+  console.log("User connected: ", socket.id);
+  socket.on('online', (socket) => {
+    io.emit('online', (username));
+  });
+
+  socket.on('sendMessage', ({ message }) => {
+    console.log("Received message:", message); // This should log the message sent from frontend
+    io.emit('receiveMessage', { message: `said ${message}` }); // Ensure you're sending a structured object with 'message'
+});
+
+  
+  socket.on('disconnect', () => {
+    console.log('User disconnected: ', socket.id);
+  });
 });
 
 const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);
@@ -77,6 +85,22 @@ pool.query('SELECT NOW()', (err, res) => {
   }
 });
 
+
+// create message handler
+app.post('/messages', authenticateToken, async (req, res) => {
+  try {
+    const message = await addMessage({ db }, req.body);
+    if (!message) throw new Error('Message creation failed');
+
+    // emit event to send message data to connected clients
+    io.to(message.roomId).emit('chat message', message); 
+
+    res.status(201).send(message);
+  } catch (err) {
+    console.error(err)
+    res.status(500).send();
+  }
+});
 
 app.post('/api/sign-in', async (req, res) => {
   const { user, pass } = req.body; // The data sent from your React frontend
@@ -164,6 +188,6 @@ app.get('/api/verify', authenticateToken, async (req, res) => {
 });
 
 
-app.listen(5000, () => {
+server.listen(5000, () => {
   console.log('Server running on port 5000');
 });
