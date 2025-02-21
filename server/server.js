@@ -48,7 +48,7 @@ io.on("connection", socket => {
 
   socket.on('sendMessage', ({ message }) => {
     console.log("Received message:", message); // This should log the message sent from frontend
-    io.emit('receiveMessage', { message: `said ${message}` }); // Ensure you're sending a structured object with 'message'
+    io.emit('receiveMessage', { message: `${socket.id} said ${message}` }); // Ensure you're sending a structured object with 'message'
 });
 
   

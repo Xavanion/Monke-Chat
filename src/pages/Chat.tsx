@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useSocket } from "../hooks/useSocket";
+import { useFetchUser } from "../hooks/useFetchUser";
 
 
 function Chat() {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<string[]>([]);
   const socket = useSocket();
-
+  const username = useFetchUser();
 
   useEffect(() => {
     if (socket) {
@@ -29,6 +30,10 @@ function Chat() {
     }
   };
   
+  if ( socket ){
+    socket.emit('online', username);
+  };
+
   return (
     <div className="Chat">
       <h1>Chat</h1>
