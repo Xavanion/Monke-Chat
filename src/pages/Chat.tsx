@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import { useSocket } from "../hooks/useSocket";
 import { useFetchUser } from "../hooks/useFetchUser";
-
+import "./styles/Chat.css";
 
 function Chat() {
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<{ username: string; message: string }[]>([]);
   const socket = useSocket();
-  const username = useFetchUser();
+  const { username, setUser, showDropdown, setDropdown } = useFetchUser();
 
   useEffect(() => {
     if (socket) {
         socket.on('receiveMessage', ( data ) => {
-          setMessages((prevMessages) => [...prevMessages, data.message]);
+          setMessages((prevMessages) => [...prevMessages, { username: data.username, message: data.message }]);
         });
     }
 
@@ -25,30 +25,42 @@ function Chat() {
 
   const sendMessage = () => {
     if (socket && message.trim()){
-      socket.emit('sendMessage', {message});
+      socket.emit('sendMessage', { username, message });
       setMessage('');
     }
   };
-  
-  if ( socket ){
-    socket.emit('online', username);
+
+
+  const handleKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter'){
+      sendMessage();
+    }
   };
 
   return (
     <div className="Chat">
-      <h1>Chat</h1>
-      <div>
+      <div className="chatHeader">
+        <h1>Chatting with</h1>
+      </div>
+      <div className="messageBoxContainer">
           {messages.map((msg, index) => (
-            <div key={index}>{msg}</div>
+            <div key={index} className="messageBox">
+              <span className="messageUser">{msg.username}:</span>
+              {msg.message}
+            </div>
           ))}
       </div>
-      <input
-      placeholder="Send Message"
-      value = {message}
-      onChange={(e) => setMessage(e.target.value)}
-      autoFocus
-      />
-      <button onClick={sendMessage}>Send</button>
+      <div className="textBox">
+        <input
+        placeholder="Send Message"
+        value = {message}
+        className="textInput"
+        onKeyDown={handleKey}
+        onChange={(e) => setMessage(e.target.value)}
+        autoFocus
+        />
+        <button onClick={sendMessage} className="messageButton">Send</button>
+      </div>
     </div>
   );
 }

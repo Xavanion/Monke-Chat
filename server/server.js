@@ -46,10 +46,10 @@ io.on("connection", socket => {
     io.emit('online', (username));
   });
 
-  socket.on('sendMessage', ({ message }) => {
-    console.log("Received message:", message); // This should log the message sent from frontend
-    io.emit('receiveMessage', { message: `${socket.id} said ${message}` }); // Ensure you're sending a structured object with 'message'
-});
+  socket.on('sendMessage', ({ username, message }) => {
+    console.log("Received message:", message, "From:", username); // TODO: Store in DB
+    io.emit('receiveMessage', { username: `${username}`, message: `${message}` }); // Change to group/dm based
+  });
 
   
   socket.on('disconnect', () => {
@@ -104,10 +104,11 @@ app.post('/messages', authenticateToken, async (req, res) => {
 
 app.post('/api/sign-in', async (req, res) => {
   const { user, pass } = req.body; // The data sent from your React frontend
+  let lowerUser = user.toLowerCase();
   
   // Process the data and send a respon
   try {
-    const results = await pool.query('SELECT * from users where username=$1', [user]);
+    const results = await pool.query('SELECT * from users where username=$1', [lowerUser]);
 
     // Check to make sure table isn't empty
     if ( results.rowCount.length === 0 ) {
@@ -123,7 +124,7 @@ app.post('/api/sign-in', async (req, res) => {
     }
 
     // Generation of JWT Token
-    const payload = { username: user};
+    const payload = { username: lowerUser};
     const token = await new SignJWT(payload)
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
@@ -158,7 +159,7 @@ app.post('/api/logout', async (req, res) => {
 
 app.post('/api/create-account', async (req, res) => {
   const { user, pass, email } = req.body;
-  user = user.toLowerCase();
+  let lowerUser = user.toLowerCase();
 
   try {
     // Generate Salt
@@ -169,9 +170,9 @@ app.post('/api/create-account', async (req, res) => {
     const hashedPassword = await bcrypt.hash(pass, salt);
 
     // Insert User into database
-    const results = await pool.query('INSERT INTO users (username, password_hash, email) VALUES ($1, $2, $3)', [user, hashedPassword, email]);
+    const results = await pool.query('INSERT INTO users (username, password_hash, email) VALUES ($1, $2, $3)', [lowerUser, hashedPassword, email]);
     console.log(results);
-    res.json({ message: 'Account created successfully: ', user, email });
+    res.json({ message: 'Account created successfully: ', lowerUser, email });
   } catch (error){
     console.error('Error Creating account: ', error);
     res.status(500).json({ message: 'Internal server error' })

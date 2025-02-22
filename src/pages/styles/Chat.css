@@ -1,0 +1,75 @@
+.messageBoxContainer{
+    margin-bottom: 80px;
+    overflow-y: auto;
+    height: calc(100vh - 200px);
+}
+
+.messageBox{
+    color: rgb(247, 248, 248);
+    gap: 20px;
+    font-size: 16px;
+    display: flex;
+    padding: 10px;
+    margin: 20px;
+    width: calc(100% - 40px);
+    border-bottom: 1px solid rgba(237, 240, 241,.5);
+}
+
+.messageBoxContainer::-webkit-scrollbar {
+    width: 7px; /* Width of the scrollbar */
+}
+
+  /* Styling the scrollbar thumb (the draggable part) */
+.messageBoxContainer::-webkit-scrollbar-thumb {
+    background-color: rgba(237, 240, 241,.5); /* Green color for the thumb */
+    border-radius: 4px; /* Rounded corners */
+}
+
+/* Styling the scrollbar on hover */
+.messageBoxContainer::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(237, 240, 241,.8); /* Darker green on hover */
+}
+
+.textBox{
+    background-color: rgba(50,50,50,.8);
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    bottom: 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    width: calc(100% - 40px);
+    margin: 20px;
+    border-radius: 10px;
+}
+
+.textInput{
+    flex-grow: 1;
+    color: rgba(237, 240, 241,.8);
+    background: rgba(50, 50, 50, 0);
+    appearance: none;
+    font-size: 16px;
+    min-height: 28px;
+    border-radius: 4px;
+    padding: 8px 16px;
+    border: none;
+    outline: none;
+}
+
+.messageButton{
+    outline: 0;
+    border: 0;
+    cursor: pointer;
+    background: none;
+    color: rgba(237, 240, 241,.8);
+    padding: 14px 20px 14px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+    border-left: 1px solid rgba(237, 240, 241,.5);
+}
+
+
+.messageUser{
+    color: rgba(237, 240, 241,.5);
+}
