@@ -1,3 +1,8 @@
+# Real-Time Chat Application
+Real-time chat application built with React, Node.js, Express, and PostgressSQL. This app lets users send direct messages and participate in group chats
+
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
