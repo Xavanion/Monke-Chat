@@ -23,8 +23,23 @@ function Chat() {
     };
   }, [socket]);
 
-  const sendMessage = () => {
+  async function sendMessage(){
     if (socket && message.trim()){
+      try{
+        const response = await fetch('http://localhost:5000/api/message', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: "include", // For cookies
+          body: JSON.stringify(message)
+        });
+        if (response && response.status == 200){
+          console.log("Message sent successfully");
+        }
+      } catch(error){
+        console.error("Error occured while sending message:", error);
+      }
       socket.emit('sendMessage', { username, message });
       setMessage('');
     }

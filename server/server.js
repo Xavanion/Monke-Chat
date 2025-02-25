@@ -45,7 +45,6 @@ io.on("connection", socket => {
   socket.on('online', (socket) => {
     io.emit('online', (username));
   });
-
   socket.on('sendMessage', ({ username, message }) => {
     console.log("Received message:", message, "From:", username); // TODO: Store in DB
     io.emit('receiveMessage', { username: `${username}`, message: `${message}` }); // Change to group/dm based
