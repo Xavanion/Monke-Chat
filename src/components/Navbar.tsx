@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useFetchUser } from '../hooks/useFetchUser';
@@ -16,6 +16,8 @@ function Navbar(){
     const navigate = useNavigate();
     const handleLogout = useLogout();
     const toggleDropdown = () => setDropdown(prev => !prev);
+    const [showFriend, setFriend] = useState(false);
+    const toggleFriend = () => setFriend(prev => !prev);
 
     // Open Dropdown
     useEffect(() => {
@@ -26,6 +28,7 @@ function Navbar(){
             navigate('/');
         }
     },[showDropdown])
+
 
     return(
         <nav className="navbar">
@@ -46,6 +49,19 @@ function Navbar(){
             </div>
             <div className="navbar-right">
                 <ul className="nav-links">
+                    {true && (
+                        <>
+                            {showFriend && (
+                                <div className='friendRequestInput'>
+                                    <input placeholder='Enter Friends User...' type='text'/>
+                                    <button type='submit'>Send</button>
+                                </div>
+                            )}
+                            <li>
+                                <button onClick={toggleFriend} className='expandFriendButton'>+</button>
+                            </li>
+                        </>
+                    )}
                     <li>
                         <Link to="/contact">Contact</Link>
                     </li>

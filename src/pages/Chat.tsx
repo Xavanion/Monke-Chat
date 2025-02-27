@@ -32,7 +32,7 @@ function Chat() {
             'Content-Type': 'application/json'
           },
           credentials: "include", // For cookies
-          body: JSON.stringify(message)
+          body: JSON.stringify({"message" : message, "username" : username})
         });
         if (response && response.status == 200){
           console.log("Message sent successfully");

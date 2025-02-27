@@ -29,5 +29,12 @@ CREATE TABLE direct_messages (
   sender_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   receiver_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   content TEXT NOT NULL,
+  unread TEXT NOT NULL,
   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE friends (
+  user
+  friend 
 );

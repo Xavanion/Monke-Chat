@@ -86,13 +86,14 @@ pool.query('SELECT NOW()', (err, res) => {
 
 
 // create message handler
-app.post('/messages', authenticateToken, async (req, res) => {
+app.post('/api/message', authenticateToken, async (req, res) => {
   try {
     const message = await addMessage({ db }, req.body);
     if (!message) throw new Error('Message creation failed');
+    
 
     // emit event to send message data to connected clients
-    io.to(message.roomId).emit('chat message', message); 
+    io.to(message.roomId).emit('chat message', message.message); 
 
     res.status(201).send(message);
   } catch (err) {

@@ -99,3 +99,34 @@
     color: #edf0f1;
     text-decoration: none;
 }
+
+
+.friendRequestInput {
+    position: relative;
+    display: flex;
+    align-items: center;
+    input{
+        background: none;
+        color: white;
+        width: 100%;
+        border: none;
+        top: 50%;
+        padding: 10px;
+    }
+    button{
+        position: absolute;
+        right: 10px;
+        background: none;
+        color: white;
+        padding: 10px;
+        border: none;
+    }
+}
+
+
+.expandFriendButton{
+    background: none;
+    border: none;
+    color: white;
+    font-size: large;
+}
