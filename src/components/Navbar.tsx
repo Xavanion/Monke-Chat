@@ -30,6 +30,12 @@ function Navbar(){
     },[showDropdown])
 
 
+    async function addFriend(event: React.FormEvent<HTMLFormElement>){
+        event.preventDefault();
+        console.log("Friend Added", event);
+    };
+
+
     return(
         <nav className="navbar">
             <div className="navbar-left">
@@ -53,8 +59,10 @@ function Navbar(){
                         <>
                             {showFriend && (
                                 <div className='friendRequestInput'>
-                                    <input placeholder='Enter Friends User...' type='text'/>
-                                    <button type='submit'>Send</button>
+                                    <form className='friendSubmit' onSubmit={addFriend}>
+                                        <input placeholder='Enter Friends User...' type='text'/>
+                                        <button type='submit'>Send</button>
+                                    </form>
                                 </div>
                             )}
                             <li>
