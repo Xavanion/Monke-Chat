@@ -90,7 +90,7 @@ app.post('/api/message', authenticateToken, async (req, res) => {
   try {
     const message = await addMessage({ db }, req.body);
     if (!message) throw new Error('Message creation failed');
-    
+
 
     // emit event to send message data to connected clients
     io.to(message.roomId).emit('chat message', message.message); 
@@ -99,6 +99,15 @@ app.post('/api/message', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error(err)
     res.status(500).send();
+  }
+});
+
+app.post('/api/friendRequest', async (req, res) => {
+  const { user, friend } = req.body;
+  try{
+    const results = await pool.query('SELECT * from ',[user, friend])
+  } catch(error){
+    return res.status(500).json({message: 'Internal server error, friend request'})
   }
 });
 

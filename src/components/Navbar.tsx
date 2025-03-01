@@ -18,6 +18,7 @@ function Navbar(){
     const toggleDropdown = () => setDropdown(prev => !prev);
     const [showFriend, setFriend] = useState(false);
     const toggleFriend = () => setFriend(prev => !prev);
+    const [requestName, setRequest] = useState('');
 
     // Open Dropdown
     useEffect(() => {
@@ -32,8 +33,26 @@ function Navbar(){
 
     async function addFriend(event: React.FormEvent<HTMLFormElement>){
         event.preventDefault();
-        console.log("Friend Added", event);
+        const response = await fetch('http://localhost:5000/api/friendRequest', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: "include", // For cookies
+            body: JSON.stringify({user: username, friend: requestName.toLowerCase()})
+        });
+
+        if (!response.ok){
+            console.error("Error adding friend", response.status);
+            navigate('/');
+        }
+        console.log("Friend Added", requestName);
     };
+
+    // Handle changing friend name
+    function handleFriendChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setRequest(event.target.value);
+    }
 
 
     return(
@@ -60,7 +79,10 @@ function Navbar(){
                             {showFriend && (
                                 <div className='friendRequestInput'>
                                     <form className='friendSubmit' onSubmit={addFriend}>
-                                        <input placeholder='Enter Friends User...' type='text'/>
+                                        <input placeholder='Enter Friends User...'
+                                            type='text'
+                                            value={requestName}
+                                            onChange={handleFriendChange}/>
                                         <button type='submit'>Send</button>
                                     </form>
                                 </div>
