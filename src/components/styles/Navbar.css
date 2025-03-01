@@ -112,6 +112,7 @@
         border: none;
         top: 50%;
         padding: 10px;
+        padding-right: 35px;
     }
     button{
         position: absolute;

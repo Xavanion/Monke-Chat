@@ -1,7 +1,8 @@
-DROP TABLE users;
-DROP TABLE rooms;
-DROP TABLE messages;
-DROP TABLE direct_messages;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS rooms CASCADE;
+DROP TABLE IF EXISTS messages CASCADE;
+DROP TABLE IF EXISTS direct_messages CASCADE;
+DROP TABLE IF EXISTS friends CASCADE;
 
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
@@ -33,8 +34,9 @@ CREATE TABLE direct_messages (
   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
 CREATE TABLE friends (
-  user
-  friend 
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  friend_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  PRIMARY KEY (user_id, friend_id), -- Ensure unique friendships
+  CHECK (user_id < friend_id) -- Prevent duplicate friendships (e.g., (1, 2) and (2, 1))
 );

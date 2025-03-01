@@ -6,8 +6,9 @@ import "./styles/Chat.css";
 function Chat() {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<{ username: string; message: string }[]>([]);
+  const [currentRoom, setCurrentRoom] = useState<string | null>(null);
   const socket = useSocket();
-  const { username, setUser, showDropdown, setDropdown } = useFetchUser();
+  const { username, setUser, id, showDropdown, setDropdown } = useFetchUser();
 
   useEffect(() => {
     if (socket) {
@@ -16,7 +17,7 @@ function Chat() {
         });
     }
 
-    return () => {
+    return () => { 
         if (socket) {
             socket.off('receiveMessage');
         }
@@ -45,13 +46,6 @@ function Chat() {
     }
   };
 
-
-  const handleKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter'){
-      sendMessage();
-    }
-  };
-
   return (
     <div className="Chat">
       <div className="chatHeader">
@@ -70,7 +64,7 @@ function Chat() {
         placeholder="Send Message"
         value = {message}
         className="textInput"
-        onKeyDown={handleKey}
+        onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
         onChange={(e) => setMessage(e.target.value)}
         autoFocus
         />

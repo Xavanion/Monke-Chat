@@ -12,7 +12,7 @@ import './styles/Navbar.css';
 
 
 function Navbar(){
-    const { username, setUser, showDropdown, setDropdown } = useFetchUser();
+    const { username, setUser, id, showDropdown, setDropdown } = useFetchUser();
     const navigate = useNavigate();
     const handleLogout = useLogout();
     const toggleDropdown = () => setDropdown(prev => !prev);
@@ -33,26 +33,28 @@ function Navbar(){
 
     async function addFriend(event: React.FormEvent<HTMLFormElement>){
         event.preventDefault();
-        const response = await fetch('http://localhost:5000/api/friendRequest', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: "include", // For cookies
-            body: JSON.stringify({user: username, friend: requestName.toLowerCase()})
-        });
+        try{
+            const response = await fetch('http://localhost:5000/api/friendRequest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include", // For cookies
+                body: JSON.stringify({user: username.toLowerCase(), friend: requestName.toLowerCase(), userId: id})
+            });
 
-        if (!response.ok){
-            console.error("Error adding friend", response.status);
-            navigate('/');
+            const data = await response.json();
+    
+            if (!response.ok){
+                throw new Error(data.message || "Error adding friend");
+            }
+
+            setFriend(false);
+        } catch(error){
+            console.error("Error occured while adding friend:", error);
         }
-        console.log("Friend Added", requestName);
+        
     };
-
-    // Handle changing friend name
-    function handleFriendChange(event: React.ChangeEvent<HTMLInputElement>) {
-        setRequest(event.target.value);
-    }
 
 
     return(
@@ -82,7 +84,7 @@ function Navbar(){
                                         <input placeholder='Enter Friends User...'
                                             type='text'
                                             value={requestName}
-                                            onChange={handleFriendChange}/>
+                                            onChange={(e) => setRequest(e.target.value)}/>
                                         <button type='submit'>Send</button>
                                     </form>
                                 </div>

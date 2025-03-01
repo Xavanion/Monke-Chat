@@ -5,7 +5,8 @@ import { useAuth } from './useAuth';
 
 export const useFetchUser = () => {
     const [username, setUser] = useState('');
-    const [showDropdown, setDropdown] = useState(false);
+    const [showDropdown, setDropdown] = useState<boolean>(false);
+    const [id, setId] = useState<string | null>(null);
     const isAuthenticated = useAuth();
 
     // Fetch Username
@@ -21,6 +22,7 @@ export const useFetchUser = () => {
                         const data = await response.json();
                         const formattedUser = data.user.charAt(0).toUpperCase() + data.user.slice(1);
                         setUser(formattedUser);
+                        setId(String(data.id));
                         setDropdown(true);
                     }
                 } catch ( error ){
@@ -28,6 +30,7 @@ export const useFetchUser = () => {
                 }
             } else {
                 setUser('');
+                setId(null);
                 setDropdown(false);
             }
         };
@@ -35,6 +38,6 @@ export const useFetchUser = () => {
         fetchUser();
     }, [isAuthenticated]);
 
-    return { username, setUser, showDropdown, setDropdown };
+    return { username, setUser, id, showDropdown, setDropdown };
 }
     

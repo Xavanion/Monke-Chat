@@ -1,0 +1,36 @@
+.chatRoom{
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.chatSidebar{
+    width: 200px;
+    background-color: #262A2B;
+    border-right: 1px solid rgba(237, 240, 241,.2);
+    border-top: 1px solid rgba(237, 240, 241,.2);
+    padding: 10px;
+}
+
+.chatSidebar h3 {
+    text-decoration: underline;
+    margin-top: 10px;
+}
+
+.friendBox{
+    margin-bottom: 20px;
+    margin-top: 20px;
+    padding: 10px;
+    border-bottom: 1px solid rgba(237, 240, 241,.5);
+    border-top: 1px solid rgba(237, 240, 241,.5);
+    cursor: pointer;
+}
+
+.friendBox:hover{
+    background-color: #3c4344;
+}
+
+.chatbox{
+    flex: 1;
+    padding: 10px;
+}
