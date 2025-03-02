@@ -12,7 +12,7 @@ import './styles/Navbar.css';
 
 
 function Navbar(){
-    const { username, setUser, id, showDropdown, setDropdown } = useFetchUser();
+    const { username, setUser, uid, showDropdown, setDropdown } = useFetchUser();
     const navigate = useNavigate();
     const handleLogout = useLogout();
     const toggleDropdown = () => setDropdown(prev => !prev);
@@ -40,7 +40,7 @@ function Navbar(){
                     'Content-Type': 'application/json'
                 },
                 credentials: "include", // For cookies
-                body: JSON.stringify({user: username.toLowerCase(), friend: requestName.toLowerCase(), userId: id})
+                body: JSON.stringify({user: username.toLowerCase(), friend: requestName.toLowerCase(), userId: uid})
             });
 
             const data = await response.json();

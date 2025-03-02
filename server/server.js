@@ -52,8 +52,8 @@ io.on("connection", socket => {
   });
   
   // User sends a message
-  socket.on('sendMessage', ({ username, message }) => {
-    console.log("Received message:", message, "From:", username); // TODO: Store in DB
+  socket.on('sendMessage', ({ username, message, roomId }) => {
+    console.log("Received message:", message, "From:", username, "In room:", roomId); // TODO: Store in DB
     io.to(roomId).emit('receiveMessage', { username: `${username}`, message: `${message}` }); // Change to group/dm based
   });
 
@@ -148,7 +148,7 @@ app.get('/api/friendList', authenticateToken, async (req, res) => {
        FROM users u
        JOIN friends f ON u.id = f.user_id
        WHERE f.friend_id = $1`,
-      [req.user.id]
+      [req.user.uid]
     );
 
     res.status(200).json({ friends: result.rows });
@@ -216,7 +216,7 @@ app.post('/api/sign-in', async (req, res) => {
       return res.status(401).json({ message: 'Invalid Credentials' })
     }
     // Generation of JWT Token
-    const payload = { username: lowerUser, id: results.rows[0].id};
+    const payload = { username: lowerUser, uid: results.rows[0].id};
 
     const token = await new SignJWT(payload)
       .setProtectedHeader({ alg: 'HS256' })
@@ -273,7 +273,7 @@ app.post('/api/create-account', async (req, res) => {
 
 // Gets user/id from authenticateToken middleware
 app.get('/api/username', authenticateToken, async (req, res) => {
-  return res.status(200).json({user: req.user.username, id: req.user.id})
+  return res.status(200).json({user: req.user.username, uid: req.user.uid})
 });
 
 app.get('/api/verify', authenticateToken, async (req, res) => {

@@ -7,10 +7,12 @@ import { useFetchUser } from '../hooks/useFetchUser';
 
 
 function Chatroom() {
-    const [friends, setFriends] = useState<{ username: string; id: string }[]>([]);
-    const { username, setUser, id, showDropdown, setDropdown } = useFetchUser();
+    const [ friends, setFriends ] = useState<{ username: string; id: string }[]>([]);
+    const { username, setUser, uid, showDropdown, setDropdown } = useFetchUser();
+    const [roomId, setRoomID] = useState<string | null>(null);
     const [socket, setSocket] = useState<Socket | null>(null);
     const navigate = useNavigate();
+    const [selectedCurrentFriend, setSelectedFriend] = useState< {username: string; id: string} | null>(null);
 
 
     useEffect(() => {
@@ -37,32 +39,27 @@ function Chatroom() {
             withCredentials: true,
         });
         setSocket(newSocket);
-      
+        
         return () => {
         newSocket.disconnect(); // Clean up on unmount
         };
-      }, []);
+    }, []);
 
 
-
-      const handleFriendClick = (friendID: string) => {
-        if(!socket){ return };
+    // In case of wanting to swap to a MPA application
+    const handleFriendClick = (friendID: string) => {
+        if(!socket || !uid) return;
         
-        const roomId = generateRoomID(friendID);
+        setRoomID([uid, friendID].sort().join('-'));
         socket.emit('joinRoom', roomId);
-        navigate(`/dm/${roomId}`);
-      };
-
-      const generateRoomID = (friendID: string) => {
-        return [id, friendID].sort().join('-')
-      }
+    };
 
     return(
         <div className='chatRoom'>
             <div className='chatSidebar'>
                 <h3>Friends</h3>
                 {friends.map((friend) => (
-                    <div key={friend.id} className="friendBox" onClick={() => handleFriendClick(friend.id)}>
+                    <div key={friend.id} className="friendBox" onClick={() => {handleFriendClick(friend.id); setSelectedFriend(friend)}}>
                         <span className="friendUser">
                             {(friend.username.charAt(0).toUpperCase() + friend.username.slice(1))}
                         </span>
@@ -70,7 +67,7 @@ function Chatroom() {
                 ))}
             </div>
             <div className='chatbox'>
-                <Chat />
+                {selectedCurrentFriend ? <Chat selectedFriend={selectedCurrentFriend}/> : <h1> Click Any Friend to Chat </h1>}
             </div>
         </div>
     );
