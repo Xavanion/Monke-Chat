@@ -41,17 +41,36 @@ const io = new Server(server,{
   }
 });
 
+
+// Socket.IO Server
 io.on("connection", socket => {
   console.log("User connected: ", socket.id);
+
+  // User comes online
   socket.on('online', (socket) => {
     io.emit('online', (username));
   });
+  
+  // User sends a message
   socket.on('sendMessage', ({ username, message }) => {
     console.log("Received message:", message, "From:", username); // TODO: Store in DB
-    io.emit('receiveMessage', { username: `${username}`, message: `${message}` }); // Change to group/dm based
+    io.to(roomId).emit('receiveMessage', { username: `${username}`, message: `${message}` }); // Change to group/dm based
   });
 
-  
+  // User Joins a room
+  socket.on('joinRoom', (roomId) => {
+    socket.join(roomId);
+    console.log(`User ${socket.id} joined room ${roomId}`);
+  });
+
+  // User Leaves a room
+  socket.on('leaveRoom', (roomId) => {
+    socket.leave(roomId);
+    console.log(`User ${socket.id} left room ${roomId}`);
+  });
+
+
+  // User Disconnects
   socket.on('disconnect', () => {
     console.log('User disconnected: ', socket.id);
   });
@@ -86,10 +105,24 @@ pool.query('SELECT NOW()', (err, res) => {
 });
 
 
+// Add's message to Database
+const addMessage = async (messageData) => {
+  const {sender_id, reciever_id, content, roomId} = messageData;
+  try{
+    const result = await pool.query('INSERT INTO direct_messages (sender_id, receiver_id, content) ', [sender_id, reciever_id, content, roomId]);
+
+    return result.rows[0];
+  } catch(error){
+    console.error('Error adding message to database:', error);
+    throw error;
+  }
+}
+
 // create message handler
 app.post('/api/message', authenticateToken, async (req, res) => {
   try {
-    const message = await addMessage({ db }, req.body);
+    const { sender_id, receiver_id, content, roomId } = req.body;
+    const message = await addMessage( {sender_id, receiver_id, content, roomId} );
     if (!message) throw new Error('Message creation failed');
 
 
