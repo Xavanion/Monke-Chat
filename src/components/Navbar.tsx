@@ -76,7 +76,7 @@ function Navbar(){
             </div>
             <div className="navbar-right">
                 <ul className="nav-links">
-                    {true && (
+                    {username && (
                         <>
                             {showFriend && (
                                 <div className='friendRequestInput'>

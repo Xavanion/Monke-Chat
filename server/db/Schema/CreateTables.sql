@@ -27,8 +27,8 @@ CREATE TABLE messages (
 
 CREATE TABLE direct_messages (
   id SERIAL PRIMARY KEY,
-  sender_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  receiver_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  sender_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  receiver_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   content TEXT NOT NULL,
   timestamp TIMESTAMP DEFAULT NOW()
 );
