@@ -1,55 +1,40 @@
 # Real-Time Chat Application
-Real-time chat application built with React, Node.js, Express, and PostgressSQL. This app lets users send direct messages and participate in group chats
+Real-time chat application built with React, Node.js, Express, and PostgressSQL.
 
+## Features
+* User authentication (sign-up, login, logout)
+* Real-time messaging with Socket.IO
+* Friend requests and direct messaging
+* Persistent message history with PostgreSQL
 
+## Prerequisites
+* Node.js
+* PostgreSQL
 
-# React + TypeScript + Vite
+## Enviroment Variables
+* Create a .env file in the server directory with the following content:
+  * DB_USER=your_db_user
+  * DB_HOST=your_db_host
+  * DB_NAME=your_db_name
+  * DB_PASSWORD=your_db_password
+  * DB_PORT=your_db_port
+  * JWT_SECRET=your_jwt_secret
+ 
+## Setup Database
+* Create your PostgreSQL Database and then run the CreateTables.sql file in the ./server/db/Schema folder to develop your schema
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Running the Application
+1) Frontend: In the base directory run "npm run dev"
+2) Backend: In the ./server/ directory run "node server.js"
+* The frontend will be available at http://localhost:5173
+* The backend will be available at http://localhost:5000
 
-Currently, two official plugins are available:
+## Project Structure:
+* src/: React components, hooks, and pages
+* server/: Backend Node.js application
+  * server.js: Main server file
+  * db/: DB Schema Files
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## Technologies Used
+* Frontend: React, Typescript, Socket.IO Client
+* Backend: Node.js, Express, PostgreSQL, Socket.IO, JWT (JSON Web Tokens)
