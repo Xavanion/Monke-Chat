@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { useNavigate } from 'react-router-dom';
 import Chat from './Chat';
 import "./styles/ChatRoom.css";
 import { useFetchUser } from '../hooks/useFetchUser';
@@ -8,11 +7,10 @@ import { useFetchUser } from '../hooks/useFetchUser';
 
 function Chatroom() {
     const [ friends, setFriends ] = useState<{ username: string; id: string }[]>([]);
-    const { username, setUser, uid, showDropdown, setDropdown } = useFetchUser();
+    const { username, uid } = useFetchUser();
     const [roomId, setRoomID] = useState<string | null>(null);
     const [socket, setSocket] = useState<Socket | null>(null);
-    const navigate = useNavigate();
-    const [selectedCurrentFriend, setSelectedFriend] = useState< {username: string; id: string} | null>(null);
+    const [selectedCurrentFriend, setSelectedFriend] = useState< {friendUser: string; friendId: string} | null>(null);
 
 
     useEffect(() => {
@@ -50,8 +48,9 @@ function Chatroom() {
     const handleFriendClick = (friendID: string) => {
         if(!socket || !uid) return;
         
-        setRoomID([uid, friendID].sort().join('-'));
-        socket.emit('joinRoom', roomId);
+        const newRoomId = [uid, friendID].sort().join('-');
+        setRoomID(newRoomId);
+        socket.emit('joinRoom', newRoomId);
     };
 
     return(
@@ -59,7 +58,7 @@ function Chatroom() {
             <div className='chatSidebar'>
                 <h3>Friends</h3>
                 {friends.map((friend) => (
-                    <div key={friend.id} className="friendBox" onClick={() => {handleFriendClick(friend.id); setSelectedFriend(friend)}}>
+                    <div key={friend.id} className="friendBox" onClick={() => {handleFriendClick(friend.id); setSelectedFriend({friendUser: friend.username, friendId: friend.id})}}>
                         <span className="friendUser">
                             {(friend.username.charAt(0).toUpperCase() + friend.username.slice(1))}
                         </span>
@@ -67,7 +66,7 @@ function Chatroom() {
                 ))}
             </div>
             <div className='chatbox'>
-                {selectedCurrentFriend ? <Chat selectedFriend={selectedCurrentFriend}/> : <h1> Click Any Friend to Chat </h1>}
+                {selectedCurrentFriend ? <Chat selectedFriend={selectedCurrentFriend} currentUser={ { currentUsername: username, uid:uid} }/> : <h1> Click Any Friend to Chat </h1>}
             </div>
         </div>
     );

@@ -107,35 +107,56 @@ pool.query('SELECT NOW()', (err, res) => {
 
 // Add's message to Database
 const addMessage = async (messageData) => {
-  const {sender_id, reciever_id, content, roomId} = messageData;
+  const {sender_id, receiver_id, content, roomId} = messageData;
   try{
-    const result = await pool.query('INSERT INTO direct_messages (sender_id, receiver_id, content) ', [sender_id, reciever_id, content, roomId]);
-
-    return result.rows[0];
+    await pool.query('INSERT INTO direct_messages (sender_id, receiver_id, content) VALUES ($1, $2, $3)', [sender_id, receiver_id, content]);
   } catch(error){
     console.error('Error adding message to database:', error);
     throw error;
   }
 }
 
-// create message handler
+
+// Fetch Past messages
+app.get('/api/messages/:roomId', async (req, res) => {
+  const { roomId } = req.params;
+  try {
+      const result = await pool.query(
+          `SELECT sender_id, content, timestamp 
+           FROM direct_messages 
+           WHERE (sender_id = $1 AND receiver_id = $2) 
+              OR (sender_id = $2 AND receiver_id = $1) 
+           ORDER BY timestamp ASC`,
+          roomId.split('-') // Extract sender_id and receiver_id from roomId
+      );
+      res.json(result.rows);
+  } catch (error) {
+      console.error("Error fetching messages:", error);
+      res.status(500).json({ error: "Failed to fetch messages" });
+  }
+});
+
+
+
+
+// Create message handler
 app.post('/api/message', authenticateToken, async (req, res) => {
   try {
     const { sender_id, receiver_id, content, roomId } = req.body;
-    const message = await addMessage( {sender_id, receiver_id, content, roomId} );
-    if (!message) throw new Error('Message creation failed');
+    await addMessage( {sender_id, receiver_id, content, roomId} );
 
-
+    console.log("RoomId:", roomId, "\nContent:", content);
     // emit event to send message data to connected clients
-    io.to(message.roomId).emit('chat message', message.message); 
-
-    res.status(201).send(message);
+    io.to(roomId).emit('chat message', content);
+    res.status(201).send();
   } catch (err) {
     console.error(err)
     res.status(500).send();
   }
 });
 
+
+// Returns rows of all friends
 app.get('/api/friendList', authenticateToken, async (req, res) => {
   try{
     const result = await pool.query(
@@ -158,6 +179,8 @@ app.get('/api/friendList', authenticateToken, async (req, res) => {
   }
 });
 
+
+// Add friend to list
 app.post('/api/friendRequest', async (req, res) => {
   const { user, friend, userId } = req.body;
   if(!user || !friend || !userId){
@@ -196,6 +219,8 @@ app.post('/api/friendRequest', async (req, res) => {
   }
 });
 
+
+// Sign in/verify account
 app.post('/api/sign-in', async (req, res) => {
   const { user, pass } = req.body; // The data sent from your React frontend
   let lowerUser = user.toLowerCase();
